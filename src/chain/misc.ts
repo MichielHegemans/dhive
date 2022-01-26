@@ -32,8 +32,8 @@
  * You acknowledge that this software is not designed, licensed or intended for use
  * in the design, construction, operation or maintenance of any military facility.
  */
-import { Account } from './account'
-import { Asset, Price } from './asset'
+import {Account} from './account'
+import {Asset, Price} from './asset'
 
 /**
  * Large number that may be unsafe to represent natively in JavaScript.
@@ -243,17 +243,12 @@ export function getVestingSharePrice(props: DynamicGlobalProperties): Price {
 /**
  * Returns the vests of specified account. Default: Subtract delegated & add received
  */
-export function getVests(
-  account: Account,
-  subtract_delegated = true,
-  add_received = true
-) {
+export function getVests(account: Account, subtract_delegated = true, add_received = true) {
   let vests: Asset = Asset.from(account.vesting_shares)
   const vests_delegated: Asset = Asset.from(account.delegated_vesting_shares)
   const vests_received: Asset = Asset.from(account.received_vesting_shares)
   const withdraw_rate: Asset = Asset.from(account.vesting_withdraw_rate)
-  const already_withdrawn =
-    (Number(account.to_withdraw) - Number(account.withdrawn)) / 1000000
+  const already_withdrawn = (Number(account.to_withdraw) - Number(account.withdrawn)) / 1000000
   const withdraw_vests = Math.min(withdraw_rate.amount, already_withdrawn)
   vests = vests.subtract(withdraw_vests)
 

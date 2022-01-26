@@ -1,5 +1,6 @@
+"use strict";
 /**
- * @file dhive entry point for browsers.
+ * @file Hive account type definitions.
  * @author Johan Nordberg <code@johan-nordberg.com>
  * @license
  * Copyright (c) 2017 Johan Nordberg. All Rights Reserved.
@@ -32,14 +33,33 @@
  * You acknowledge that this software is not designed, licensed or intended for use
  * in the design, construction, operation or maintenance of any military facility.
  */
-
-import 'core-js/features/array/from'
-import 'core-js/features/map'
-import 'core-js/features/number'
-import 'core-js/features/promise'
-import 'core-js/features/symbol'
-import 'core-js/features/symbol/async-iterator'
-import 'regenerator-runtime/runtime'
-import 'whatwg-fetch'
-
-export * from './index'
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Authority = void 0;
+const crypto_1 = require("../crypto");
+class Authority {
+    constructor({ weight_threshold, account_auths, key_auths }) {
+        this.weight_threshold = weight_threshold;
+        this.account_auths = account_auths;
+        this.key_auths = key_auths;
+    }
+    /**
+     * Convenience to create a new instance from PublicKey or authority object.
+     */
+    static from(value) {
+        if (value instanceof Authority) {
+            return value;
+        }
+        else if (typeof value === 'string' || value instanceof crypto_1.PublicKey) {
+            return new Authority({
+                account_auths: [],
+                key_auths: [[value, 1]],
+                weight_threshold: 1,
+            });
+        }
+        else {
+            return new Authority(value);
+        }
+    }
+}
+exports.Authority = Authority;
+//# sourceMappingURL=account.js.map

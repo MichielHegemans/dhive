@@ -33,8 +33,8 @@
  * in the design, construction, operation or maintenance of any military facility.
  */
 
-import { Client } from './../client'
-import { iteratorStream, sleep } from './../utils'
+import {Client} from './../client'
+import {iteratorStream, sleep} from './../utils'
 
 export enum BlockchainMode {
   /**
@@ -44,7 +44,7 @@ export enum BlockchainMode {
   /**
    * Get all blocks.
    */
-  Latest
+  Latest,
 }
 
 export interface BlockchainStreamOptions {
@@ -83,9 +83,7 @@ export class Blockchain {
    * Get latest block header.
    */
   public async getCurrentBlockHeader(mode?: BlockchainMode) {
-    return this.client.database.getBlockHeader(
-      await this.getCurrentBlockNum(mode)
-    )
+    return this.client.database.getBlockHeader(await this.getCurrentBlockNum(mode))
   }
 
   /**
@@ -106,13 +104,11 @@ export class Blockchain {
     if (!options) {
       options = {}
     } else if (typeof options === 'number') {
-      options = { from: options }
+      options = {from: options}
     }
     let current = await this.getCurrentBlockNum(options.mode)
     if (options.from !== undefined && options.from > current) {
-      throw new Error(
-        `From can't be larger than current block num (${current})`
-      )
+      throw new Error(`From can't be larger than current block num (${current})`)
     }
     let seen = options.from !== undefined ? options.from : current
     while (true) {

@@ -34,8 +34,8 @@
  */
 
 import fetch from 'cross-fetch'
-import { EventEmitter } from 'events'
-import { PassThrough } from 'stream'
+import {EventEmitter} from 'events'
+import {PassThrough} from 'stream'
 
 // TODO: Add more errors that should trigger a failover
 const timeoutErrors = ['timeout', 'ENOTFOUND', 'ECONNREFUSED', 'database lock']
@@ -43,10 +43,7 @@ const timeoutErrors = ['timeout', 'ENOTFOUND', 'ECONNREFUSED', 'database lock']
 /**
  * Return a promise that will resove when a specific event is emitted.
  */
-export function waitForEvent<T>(
-  emitter: EventEmitter,
-  eventName: string | symbol
-): Promise<T> {
+export function waitForEvent<T>(emitter: EventEmitter, eventName: string | symbol): Promise<T> {
   return new Promise((resolve, reject) => {
     emitter.once(eventName, resolve)
   })
@@ -64,10 +61,8 @@ export function sleep(ms: number): Promise<void> {
 /**
  * Return a stream that emits iterator values.
  */
-export function iteratorStream<T>(
-  iterator: AsyncIterableIterator<T>
-): NodeJS.ReadableStream {
-  const stream = new PassThrough({ objectMode: true })
+export function iteratorStream<T>(iterator: AsyncIterableIterator<T>): NodeJS.ReadableStream {
+  const stream = new PassThrough({objectMode: true})
   const iterate = async () => {
     for await (const item of iterator) {
       if (!stream.write(item)) {
@@ -104,7 +99,7 @@ export async function retryingFetch(
   failoverThreshold: number,
   consoleOnFailover: boolean,
   backoff: (tries: number) => number,
-  fetchTimeout?: (tries: number) => number
+  fetchTimeout?: (tries: number) => number,
 ) {
   let start = Date.now()
   let tries = 0
@@ -118,53 +113,31 @@ export async function retryingFetch(
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
-      return { response: await response.json(), currentAddress }
+      return {response: await response.json(), currentAddress}
     } catch (error) {
       if (timeout !== 0 && Date.now() - start > timeout) {
         if ((!error || !error.code) && Array.isArray(allAddresses)) {
           // If error is empty or not code is present, it means rpc is down => switch
-          currentAddress = failover(
-            currentAddress,
-            allAddresses,
-            currentAddress,
-            consoleOnFailover
-          )
+          currentAddress = failover(currentAddress, allAddresses, currentAddress, consoleOnFailover)
         } else {
           const isFailoverError =
-            timeoutErrors.filter(
-              (fe) => error && error.code && error.code.includes(fe)
-            ).length > 0
-          if (
-            isFailoverError &&
-            Array.isArray(allAddresses) &&
-            allAddresses.length > 1
-          ) {
+            timeoutErrors.filter((fe) => error && error.code && error.code.includes(fe)).length > 0
+          if (isFailoverError && Array.isArray(allAddresses) && allAddresses.length > 1) {
             if (round < failoverThreshold) {
               start = Date.now()
               tries = -1
               if (failoverThreshold > 0) {
                 round++
               }
-              currentAddress = failover(
-                currentAddress,
-                allAddresses,
-                currentAddress,
-                consoleOnFailover
-              )
+              currentAddress = failover(currentAddress, allAddresses, currentAddress, consoleOnFailover)
             } else {
-              error.message = `[${
-                error.code
-              }] tried ${failoverThreshold} times with ${allAddresses.join(
-                ','
-              )}`
+              error.message = `[${error.code}] tried ${failoverThreshold} times with ${allAddresses.join(',')}`
               throw error
             }
           } else {
             // tslint:disable-next-line: no-console
             console.error(
-              `Didn't failover for error ${error.code ? 'code' : 'message'}: [${
-                error.code || error.message
-              }]`
+              `Didn't failover for error ${error.code ? 'code' : 'message'}: [${error.code || error.message}]`,
             )
             throw error
           }
@@ -175,12 +148,7 @@ export async function retryingFetch(
   } while (true)
 }
 
-const failover = (
-  url: string,
-  urls: string[],
-  currentAddress: string,
-  consoleOnFailover: boolean
-) => {
+const failover = (url: string, urls: string[], currentAddress: string, consoleOnFailover: boolean) => {
   const index = urls.indexOf(url)
   const targetUrl = urls.length === index + 1 ? urls[0] : urls[index + 1]
   if (consoleOnFailover) {
@@ -192,11 +160,11 @@ const failover = (
 
 // Hack to be able to generate a valid witness_set_properties op
 // Can hopefully be removed when hived's JSON representation is fixed
-import * as ByteBuffer from 'bytebuffer'
-import { Asset, PriceType } from './chain/asset'
-import { WitnessSetPropertiesOperation } from './chain/operation'
-import { Serializer, Types } from './chain/serializer'
-import { PublicKey } from './crypto'
+import ByteBuffer from 'bytebuffer'
+import {Asset, PriceType} from './chain/asset'
+import {WitnessSetPropertiesOperation} from './chain/operation'
+import {Serializer, Types} from './chain/serializer'
+import {PublicKey} from './crypto'
 export interface WitnessProps {
   account_creation_fee?: string | Asset
   account_subsidy_budget?: number // uint32_t
@@ -209,24 +177,18 @@ export interface WitnessProps {
   url?: string
 }
 function serialize(serializer: Serializer, data: any) {
-  const buffer = new ByteBuffer(
-    ByteBuffer.DEFAULT_CAPACITY,
-    ByteBuffer.LITTLE_ENDIAN
-  )
-  serializer(buffer, data)
+  const buffer = new ByteBuffer(ByteBuffer.DEFAULT_CAPACITY, ByteBuffer.LITTLE_ENDIAN)
+  serializer(buffer as any, data)
   buffer.flip()
   // `props` values must be hex
   return buffer.toString('hex')
   // return Buffer.from(buffer.toBuffer());
 }
-export function buildWitnessUpdateOp(
-  owner: string,
-  props: WitnessProps
-): WitnessSetPropertiesOperation {
+export function buildWitnessUpdateOp(owner: string, props: WitnessProps): WitnessSetPropertiesOperation {
   const data: WitnessSetPropertiesOperation[1] = {
     extensions: [],
     owner,
-    props: []
+    props: [],
   }
   for (const key of Object.keys(props)) {
     let type: Serializer
@@ -349,7 +311,7 @@ export const operationOrders = {
   fill_collateralized_convert_request: 81,
   system_warning: 82,
   fill_recurrent_transfer: 83,
-  failed_recurrent_transfer: 84
+  failed_recurrent_transfer: 84,
 }
 
 /**
@@ -358,28 +320,14 @@ export const operationOrders = {
  */
 export function makeBitMaskFilter(allowedOperations: number[]) {
   return allowedOperations
-    .reduce(redFunction, [JSBI.BigInt(0), JSBI.BigInt(0)])
-    .map((value) =>
-      JSBI.notEqual(value, JSBI.BigInt(0)) ? value.toString() : null
-    )
+    .reduce(redFunction as any, [JSBI.BigInt(0), JSBI.BigInt(0)])
+    .map((value) => (JSBI.notEqual(value, JSBI.BigInt(0)) ? value.toString() : null))
 }
 
 const redFunction = ([low, high], allowedOperation) => {
   if (allowedOperation < 64) {
-    return [
-      JSBI.bitwiseOr(
-        low,
-        JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(allowedOperation))
-      ),
-      high
-    ]
+    return [JSBI.bitwiseOr(low, JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(allowedOperation))), high]
   } else {
-    return [
-      low,
-      JSBI.bitwiseOr(
-        high,
-        JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(allowedOperation - 64))
-      )
-    ]
+    return [low, JSBI.bitwiseOr(high, JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(allowedOperation - 64)))]
   }
 }

@@ -1,36 +1,5 @@
 {
-  "name": "@hiveio/dhive",
-  "version": "1.1.1",
-  "description": "Hive blockchain RPC client library",
   "author": "hive-network",
-  "license": "BSD-3-Clause",
-  "main": "./lib/index-node",
-  "typings": "./lib/index",
-  "browser": {
-    "./lib/index-node": "./dist/dhive.js",
-    "./src/index-node": "./dist/dhive.js",
-    "./src/version": "./lib/version.js"
-  },
-  "files": [
-    "dist/*",
-    "lib/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.syncad.com/hive/dhive"
-  },
-  "scripts": {
-    "lint": "make lint",
-    "test": "make ci-test",
-    "prepublish": "make all"
-  },
-  "keywords": [
-    "blockchain",
-    "client",
-    "rpc",
-    "hive",
-    "dhive"
-  ],
   "dependencies": {
     "bs58": "^4.0.1",
     "bytebuffer": "^5.0.1",
@@ -42,12 +11,14 @@
     "verror": "^1.10.0",
     "whatwg-fetch": "^3.0.0"
   },
+  "description": "Hive blockchain RPC client library",
   "devDependencies": {
     "@babel/core": "^7.1.6",
     "@babel/preset-env": "^7.1.6",
     "@types/bytebuffer": "^5.0.33",
     "@types/mocha": "^5.2.5",
     "@types/node": "^13.9.2",
+    "@types/secp256k1": "^4.0.3",
     "@types/verror": "^1.10.3",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
     "@typescript-eslint/eslint-plugin-tslint": "^2.24.0",
@@ -77,5 +48,28 @@
     "typescript": "^3.8.3",
     "uglify-js": "^3.4.9",
     "watchify": "^3.11.0"
-  }
+  },
+  "files": [
+    "dist/*"
+  ],
+  "keywords": [
+    "blockchain",
+    "client",
+    "rpc",
+    "hive",
+    "dhive"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "./dist/index",
+  "name": "@hiveio/dhive-node",
+  "repository": {
+    "url": "https://gitlab.syncad.com/hive/dhive"
+  },
+  "scripts": {
+    "build": "touch dist && rm -r dist && tsc -b .",
+    "lint": "make lint",
+    "prepublish": "npm run build",
+    "test": "make ci-test"
+  },
+  "version": "1.1.1"
 }

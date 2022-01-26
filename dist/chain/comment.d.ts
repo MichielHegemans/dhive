@@ -1,5 +1,5 @@
 /**
- * @file dhive entry point for node.js.
+ * @file Hive type definitions related to comments and posting.
  * @author Johan Nordberg <code@johan-nordberg.com>
  * @license
  * Copyright (c) 2017 Johan Nordberg. All Rights Reserved.
@@ -32,5 +32,61 @@
  * You acknowledge that this software is not designed, licensed or intended for use
  * in the design, construction, operation or maintenance of any military facility.
  */
-
-export * from './index'
+import { Asset } from './asset';
+export interface Comment {
+    id: number;
+    category: string;
+    parent_author: string;
+    parent_permlink: string;
+    author: string;
+    permlink: string;
+    title: string;
+    body: string;
+    json_metadata: string;
+    last_update: string;
+    created: string;
+    active: string;
+    last_payout: string;
+    depth: number;
+    children: number;
+    net_rshares: string;
+    abs_rshares: string;
+    vote_rshares: string;
+    children_abs_rshares: string;
+    cashout_time: string;
+    max_cashout_time: string;
+    total_vote_weight: number;
+    reward_weight: number;
+    total_payout_value: Asset | string;
+    curator_payout_value: Asset | string;
+    author_rewards: string;
+    net_votes: number;
+    root_comment: number;
+    max_accepted_payout: string;
+    percent_hbd: number;
+    allow_replies: boolean;
+    allow_votes: boolean;
+    allow_curation_rewards: boolean;
+    beneficiaries: BeneficiaryRoute[];
+}
+/**
+ * Discussion a.k.a. Post.
+ */
+export interface Discussion extends Comment {
+    url: string;
+    root_title: string;
+    pending_payout_value: Asset | string;
+    total_pending_payout_value: Asset | string;
+    active_votes: any[];
+    replies: string[];
+    author_reputation: number;
+    promoted: Asset | string;
+    body_length: string;
+    reblogged_by: any[];
+    first_reblogged_by?: any;
+    first_reblogged_on?: any;
+}
+export interface BeneficiaryRoute {
+    account: string;
+    weight: number;
+}

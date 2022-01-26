@@ -33,12 +33,12 @@
  * in the design, construction, operation or maintenance of any military facility.
  */
 
-import { PublicKey } from '../crypto'
-import { AuthorityType } from './account'
-import { Asset, PriceType } from './asset'
-import { SignedBlockHeader } from './block'
-import { BeneficiaryRoute } from './comment'
-import { ChainProperties, HexBuffer } from './misc'
+import {PublicKey} from '../crypto'
+import {AuthorityType} from './account'
+import {Asset, PriceType} from './asset'
+import {SignedBlockHeader} from './block'
+import {BeneficiaryRoute} from './comment'
+import {ChainProperties, HexBuffer} from './misc'
 
 /**
  * Operation name.
@@ -141,7 +141,7 @@ export type VirtualOperationName =  // <id>
  */
 export interface Operation {
   0: OperationName | VirtualOperationName
-  1: { [key: string]: any }
+  1: {[key: string]: any}
 }
 
 export interface AppliedOperation {
@@ -308,7 +308,7 @@ export interface CommentOptionsOperation extends Operation {
     allow_votes: boolean
     /** Whether to allow post to recieve curation rewards. */
     allow_curation_rewards: boolean
-    extensions: [0, { beneficiaries: BeneficiaryRoute[] }][] // flat_set< comment_options_extension >
+    extensions: [0, {beneficiaries: BeneficiaryRoute[]}][] // flat_set< comment_options_extension >
   }
 }
 

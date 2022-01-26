@@ -33,10 +33,10 @@
  * in the design, construction, operation or maintenance of any military facility.
  */
 
-import * as assert from 'assert'
+import assert from 'assert'
 
-import { Authority, AuthorityType } from '../chain/account'
-import { Asset } from '../chain/asset'
+import {Authority, AuthorityType} from '../chain/account'
+import {Asset} from '../chain/asset'
 import {
   AccountUpdateOperation,
   ClaimAccountOperation,
@@ -47,15 +47,11 @@ import {
   DelegateVestingSharesOperation,
   Operation,
   TransferOperation,
-  VoteOperation
+  VoteOperation,
 } from '../chain/operation'
-import {
-  SignedTransaction,
-  Transaction,
-  TransactionConfirmation
-} from '../chain/transaction'
-import { Client } from './../client'
-import { cryptoUtils, PrivateKey, PublicKey } from './../crypto'
+import {SignedTransaction, Transaction, TransactionConfirmation} from '../chain/transaction'
+import {Client} from './../client'
+import {cryptoUtils, PrivateKey, PublicKey} from './../crypto'
 
 export interface CreateAccountOptions {
   /**
@@ -94,7 +90,7 @@ export interface CreateAccountOptions {
   /**
    * Optional account meta-data.
    */
-  metadata?: { [key: string]: any }
+  metadata?: {[key: string]: any}
 }
 
 export class BroadcastAPI {
@@ -122,14 +118,10 @@ export class BroadcastAPI {
    * @param options The comment/post options.
    * @param key Private posting key of comment author.
    */
-  public async commentWithOptions(
-    comment: CommentOperation[1],
-    options: CommentOptionsOperation[1],
-    key: PrivateKey
-  ) {
+  public async commentWithOptions(comment: CommentOperation[1], options: CommentOptionsOperation[1], key: PrivateKey) {
     const ops: Operation[] = [
       ['comment', comment],
-      ['comment_options', options]
+      ['comment_options', options],
     ]
     return this.sendOperations(ops, key)
   }
@@ -169,46 +161,21 @@ export class BroadcastAPI {
    * @param options New account options.
    * @param key Private active key of account creator.
    */
-  public async createTestAccount(
-    options: CreateAccountOptions,
-    key: PrivateKey
-  ) {
-    assert(
-      global.hasOwnProperty('it'),
-      'helper to be used only for mocha tests'
-    )
+  public async createTestAccount(options: CreateAccountOptions, key: PrivateKey) {
+    assert(global.hasOwnProperty('it'), 'helper to be used only for mocha tests')
 
-    const { username, metadata, creator } = options
+    const {username, metadata, creator} = options
 
     const prefix = this.client.addressPrefix
-    let owner: Authority,
-      active: Authority,
-      posting: Authority,
-      memo_key: PublicKey
+    let owner: Authority, active: Authority, posting: Authority, memo_key: PublicKey
     if (options.password) {
-      const ownerKey = PrivateKey.fromLogin(
-        username,
-        options.password,
-        'owner'
-      ).createPublic(prefix)
+      const ownerKey = PrivateKey.fromLogin(username, options.password, 'owner').createPublic(prefix)
       owner = Authority.from(ownerKey)
-      const activeKey = PrivateKey.fromLogin(
-        username,
-        options.password,
-        'active'
-      ).createPublic(prefix)
+      const activeKey = PrivateKey.fromLogin(username, options.password, 'active').createPublic(prefix)
       active = Authority.from(activeKey)
-      const postingKey = PrivateKey.fromLogin(
-        username,
-        options.password,
-        'posting'
-      ).createPublic(prefix)
+      const postingKey = PrivateKey.fromLogin(username, options.password, 'posting').createPublic(prefix)
       posting = Authority.from(postingKey)
-      memo_key = PrivateKey.fromLogin(
-        username,
-        options.password,
-        'memo'
-      ).createPublic(prefix)
+      memo_key = PrivateKey.fromLogin(username, options.password, 'memo').createPublic(prefix)
     } else if (options.auths) {
       owner = Authority.from(options.auths.owner)
       active = Authority.from(options.auths.active)
@@ -218,7 +185,7 @@ export class BroadcastAPI {
       throw new Error('Must specify either password or auths')
     }
 
-    let { fee, delegation } = options
+    let {fee, delegation} = options
 
     delegation = Asset.from(delegation || 0, 'VESTS')
     fee = Asset.from(fee || 0, 'TESTS')
@@ -236,8 +203,8 @@ export class BroadcastAPI {
       {
         creator,
         extensions: [],
-        fee
-      }
+        fee,
+      },
     ]
 
     const create_op: CreateClaimedAccountOperation = [
@@ -250,8 +217,8 @@ export class BroadcastAPI {
         memo_key,
         new_account_name: username,
         owner,
-        posting
-      }
+        posting,
+      },
     ]
 
     const ops: any[] = [claim_op, create_op]
@@ -262,8 +229,8 @@ export class BroadcastAPI {
         {
           delegatee: username,
           delegator: creator,
-          vesting_shares: delegation
-        }
+          vesting_shares: delegation,
+        },
       ]
       ops.push(delegate_op)
     }
@@ -294,10 +261,7 @@ export class BroadcastAPI {
    * @param options Delegation options.
    * @param key Private active key of the delegator.
    */
-  public async delegateVestingShares(
-    options: DelegateVestingSharesOperation[1],
-    key: PrivateKey
-  ) {
+  public async delegateVestingShares(options: DelegateVestingSharesOperation[1], key: PrivateKey) {
     const op: Operation = ['delegate_vesting_shares', options]
     return this.sendOperations([op], key)
   }
@@ -309,20 +273,13 @@ export class BroadcastAPI {
    */
   public async sendOperations(
     operations: Operation[],
-    key: PrivateKey | PrivateKey[]
+    key: PrivateKey | PrivateKey[],
   ): Promise<TransactionConfirmation> {
     const props = await this.client.database.getDynamicGlobalProperties()
 
     const ref_block_num = props.head_block_number & 0xffff
-    const ref_block_prefix = Buffer.from(
-      props.head_block_id,
-      'hex'
-    ).readUInt32LE(4)
-    const expiration = new Date(
-      new Date(props.time + 'Z').getTime() + this.expireTime
-    )
-      .toISOString()
-      .slice(0, -5)
+    const ref_block_prefix = Buffer.from(props.head_block_id, 'hex').readUInt32LE(4)
+    const expiration = new Date(new Date(props.time + 'Z').getTime() + this.expireTime).toISOString().slice(0, -5)
     const extensions = []
 
     const tx: Transaction = {
@@ -330,7 +287,7 @@ export class BroadcastAPI {
       extensions,
       operations,
       ref_block_num,
-      ref_block_prefix
+      ref_block_prefix,
     }
 
     const result = await this.send(this.sign(tx, key))
@@ -342,22 +299,17 @@ export class BroadcastAPI {
   /**
    * Sign a transaction with key(s).
    */
-  public sign(
-    transaction: Transaction,
-    key: PrivateKey | PrivateKey[]
-  ): SignedTransaction {
+  public sign(transaction: Transaction, key: PrivateKey | PrivateKey[]): SignedTransaction {
     return cryptoUtils.signTransaction(transaction, key, this.client.chainId)
   }
 
   /**
    * Broadcast a signed transaction to the network.
    */
-  public async send(
-    transaction: SignedTransaction
-  ): Promise<TransactionConfirmation> {
+  public async send(transaction: SignedTransaction): Promise<TransactionConfirmation> {
     const trxId = cryptoUtils.generateTrxId(transaction)
     const result = await this.call('broadcast_transaction', [transaction])
-    return Object.assign({ id: trxId }, result)
+    return Object.assign({id: trxId}, result)
   }
 
   /**

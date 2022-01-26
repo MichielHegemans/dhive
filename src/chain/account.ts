@@ -35,8 +35,8 @@
 
 import * as ByteBuffer from 'bytebuffer'
 
-import { PublicKey } from '../crypto'
-import { Asset } from './asset'
+import {PublicKey} from '../crypto'
+import {Asset} from './asset'
 
 export interface AuthorityType {
   weight_threshold: number // uint32_t
@@ -49,7 +49,7 @@ export class Authority implements AuthorityType {
   public account_auths: [string, number][]
   public key_auths: [string | PublicKey, number][]
 
-  constructor({ weight_threshold, account_auths, key_auths }: AuthorityType) {
+  constructor({weight_threshold, account_auths, key_auths}: AuthorityType) {
     this.weight_threshold = weight_threshold
     this.account_auths = account_auths
     this.key_auths = key_auths
@@ -65,7 +65,7 @@ export class Authority implements AuthorityType {
       return new Authority({
         account_auths: [],
         key_auths: [[value, 1]],
-        weight_threshold: 1
+        weight_threshold: 1,
       })
     } else {
       return new Authority(value)

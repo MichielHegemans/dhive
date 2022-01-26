@@ -1,5 +1,7 @@
 # [dhive](https://github.com)
 
+## THIS IS A QUICK TSCONFIG REWRITE THAT REMOVES BROWERSIFY SUPPORT TO REDUCE BUNDLED SIZE
+
 Robust hive client library that runs in both node.js and the browser.
 
 Needs test net urls, chain id
